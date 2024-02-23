@@ -7,6 +7,7 @@ import numpy as np
 import random
 import joblib
 from sklearn.ensemble import RandomForestRegressor
+import os
 
 env = TimeLimit(
     env=HIVPatient(domain_randomization=False), max_episode_steps=200
@@ -45,7 +46,7 @@ class ProjectAgent:
         joblib.dump(self.Q, path + 'saved_Q.joblib')
 
     def load(self):
-        self.Q = joblib.load('saved_Q.joblib')
+        self.Q = joblib.load(os.path.join(os.getcwd(), 'src/saved_Q.joblib'))
 
     def greedy_action(self,s):
         Qsa = []
