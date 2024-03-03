@@ -50,7 +50,7 @@ class DuelingDQN(nn.Module):
         return qvals
 
 
-class ProjectAgentDQN:
+class ProjectAgent:
     def __init__(self):
         self.DQN = DuelingDQN(state_dim, nb_neurons, n_action).to(device)
         
