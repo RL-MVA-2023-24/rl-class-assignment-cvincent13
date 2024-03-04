@@ -191,5 +191,4 @@ class ProjectAgent:
         torch.save(self.DQN.state_dict(), path + 'saved_DQN.pth')
 
     def load(self):
-        self.DQN.load_state_dict(torch.load(os.path.join(os.getcwd(), 'src/saved_DQN_1.pth')))
-        self.DQN.to(device)
+        self.DQN.load_state_dict(torch.load(os.path.join(os.getcwd(), 'src/saved_DQN_1.pth')), map_location=torch.device('cpu'))
