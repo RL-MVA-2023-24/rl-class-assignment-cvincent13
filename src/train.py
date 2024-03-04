@@ -17,7 +17,6 @@ env = TimeLimit(
 # DQN
 state_dim = env.observation_space.shape[0]
 n_action = env.action_space.n 
-nb_neurons=1024
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,24 +51,26 @@ class DuelingDQN(nn.Module):
 
 class ProjectAgent:
     def __init__(self):
+        self.save_name = 'saved_DQN_3.pth'
+        nb_neurons=512
         self.DQN = DuelingDQN(state_dim, nb_neurons, n_action).to(device)
         
         self.nb_actions = env.action_space.n
-        self.max_episode = 500
-        self.start_saving = 250
+        self.max_episode = 300
+        self.start_saving = 100
         self.gamma = 0.98
         self.batch_size = 800
-        buffer_size = 200000
-        #self.memory = PrioritizedReplayBuffer(buffer_size,0.6,device)
+        buffer_size = 100000
+        #self.memory = ReplayBuffer(buffer_size,device)
         self.epsilon_max = 1.
         self.epsilon_min = 0.01
-        self.epsilon_stop = 25000
-        self.epsilon_delay = 2000
+        self.epsilon_stop = 98*200
+        self.epsilon_delay = 2*200
         self.epsilon_step = (self.epsilon_max-self.epsilon_min)/self.epsilon_stop 
         self.target_model = deepcopy(self.DQN).to(device)
-        self.criterion = torch.nn.SmoothL1Loss(reduce=None)
-        lr = 0.0025
-        self.optimizer = torch.optim.RMSprop(self.DQN.parameters(), lr=lr) # RMSProp ?
+        self.criterion = torch.nn.SmoothL1Loss()
+        lr = 0.001
+        self.optimizer = torch.optim.Adam(self.DQN.parameters(), lr=lr) # RMSProp ?
         self.nb_gradient_steps = 3
         self.update_target_strategy = 'replace'
         self.update_target_freq = 400
@@ -188,7 +189,7 @@ class ProjectAgent:
         return a
 
     def save(self, path):
-        torch.save(self.DQN.state_dict(), path + 'saved_DQN.pth')
+        torch.save(self.DQN.state_dict(), path + self.save_name)
 
     def load(self):
-        self.DQN.load_state_dict(torch.load(os.path.join(os.getcwd(), 'src/saved_DQN_1.pth'), map_location=torch.device('cpu')))
+        self.DQN.load_state_dict(torch.load(os.path.join(os.getcwd(), 'src/' + self.save_name), map_location=torch.device('cpu')))
